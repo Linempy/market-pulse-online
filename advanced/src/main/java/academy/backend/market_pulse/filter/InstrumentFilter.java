@@ -33,6 +33,5 @@ import academy.backend.market_pulse.model.Instrument;
  */
 public interface InstrumentFilter {
 
-    // TODO: реализовать описанные ФТ с помощью паттерна Strategy
     boolean matches(Instrument instrument);
 }
