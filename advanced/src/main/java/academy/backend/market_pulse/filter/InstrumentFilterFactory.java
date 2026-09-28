@@ -4,6 +4,8 @@ import academy.backend.market_pulse.dictionary.InstrumentType;
 import academy.backend.market_pulse.model.Currency;
 
 import java.math.BigDecimal;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 /**
  * Создаёт стратегию фильтрации по параметрам команды {@code list}.
@@ -53,12 +55,7 @@ public final class InstrumentFilterFactory {
             );
         }
 
-        int filtersCount = 0;
-
-        filtersCount += type != null ? 1 : 0;
-        filtersCount += ticker != null ? 1 : 0;
-        filtersCount += currency != null ? 1 : 0;
-        filtersCount += hasPrice ? 1 : 0;
+        long filtersCount = Stream.of(type, ticker, currency, price).filter(Objects::nonNull).count();
 
         if (filtersCount > 1) {
             throw new IllegalArgumentException(
