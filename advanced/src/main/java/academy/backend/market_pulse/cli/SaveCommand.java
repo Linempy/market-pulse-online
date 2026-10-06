@@ -1,15 +1,15 @@
 package academy.backend.market_pulse.cli;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.concurrent.Callable;
-
-import academy.backend.market_pulse.model.Instrument;
+import academy.backend.market_pulse.exception.InstrumentSaveException;
 import academy.backend.market_pulse.repository.InstrumentRepository;
 import lombok.RequiredArgsConstructor;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
+
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.concurrent.Callable;
 
 /**
  * Сохраняет текущий список инструментов в файл по указанному пользователем пути — первый в
@@ -24,27 +24,23 @@ public class SaveCommand implements Callable<Integer> {
 
     private final InstrumentRepository repository;
 
-    // TODO №1: реализовать сохранение через try-with-resources
-    // TODO №2: показать боль от связки FI <-> throws
-    // TODO №3: обернуть IOException в InstrumentSaveException, а не отдавать его как есть
     // TODO №4: реализовать с помощью Vavr.Try
     @Override
-    public Integer call() throws IOException {
-        int saved = 0;
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(path))) {
-            saved = writeAll(writer);
-        }
-        System.out.printf("Инструменты сохранены: %d шт%n", saved);
-        return 0;
-    }
+    public Integer call() {
 
-    private int writeAll(BufferedWriter writer) throws IOException {
-        int count = 0;
-        for (Instrument instrument : repository) {
-            writer.write(instrument.toString());
-            writer.newLine();
-            count++;
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(path))) {
+            repository.forEach(instrument -> {
+                try {
+                    writer.write(instrument.toString());
+                    writer.newLine();
+                } catch (IOException e) {
+                    throw new InstrumentSaveException("Ошибка при записи в файл: %s".formatted(path), e);
+                }
+            });
+        } catch (IOException e) {
+            throw new InstrumentSaveException("Ошибка при записи в файл: %s".formatted(path), e);
         }
-        return count;
+        System.out.println("Инструменты были сохранены");
+        return 0;
     }
 }
