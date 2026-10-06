@@ -1,7 +1,9 @@
 package academy.backend.market_pulse.cli;
 
 import academy.backend.market_pulse.exception.InstrumentSaveException;
+import academy.backend.market_pulse.model.Instrument;
 import academy.backend.market_pulse.repository.InstrumentRepository;
+import io.vavr.control.Try;
 import lombok.RequiredArgsConstructor;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
@@ -24,23 +26,26 @@ public class SaveCommand implements Callable<Integer> {
 
     private final InstrumentRepository repository;
 
-    // TODO №4: реализовать с помощью Vavr.Try
     @Override
     public Integer call() {
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(path))) {
-            repository.forEach(instrument -> {
-                try {
-                    writer.write(instrument.toString());
-                    writer.newLine();
-                } catch (IOException e) {
-                    throw new InstrumentSaveException("Ошибка при записи в файл: %s".formatted(path), e);
-                }
-            });
-        } catch (IOException e) {
-            throw new InstrumentSaveException("Ошибка при записи в файл: %s".formatted(path), e);
-        }
-        System.out.println("Инструменты были сохранены");
+        int countSaved = Try.withResources(() -> new BufferedWriter(new FileWriter(path)))
+                .of(this::writeAll)
+                .getOrElseThrow(
+                        cause -> new InstrumentSaveException("Ошибка при записи в файл: %s".formatted(path), cause)
+                );
+        System.out.printf("Инструменты были сохранены: %d шт", countSaved);
         return 0;
+    }
+
+    private int writeAll(BufferedWriter writer) throws IOException {
+        int count = 0;
+        for (Instrument instrument : repository) {
+            writer.write(instrument.toString());
+            writer.newLine();
+            count++;
+        }
+
+        return count;
     }
 }
