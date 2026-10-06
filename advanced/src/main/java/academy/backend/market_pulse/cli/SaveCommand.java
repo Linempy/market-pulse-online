@@ -1,7 +1,11 @@
 package academy.backend.market_pulse.cli;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.concurrent.Callable;
 
+import academy.backend.market_pulse.model.Instrument;
 import academy.backend.market_pulse.repository.InstrumentRepository;
 import lombok.RequiredArgsConstructor;
 import picocli.CommandLine.Command;
@@ -25,7 +29,22 @@ public class SaveCommand implements Callable<Integer> {
     // TODO №3: обернуть IOException в InstrumentSaveException, а не отдавать его как есть
     // TODO №4: реализовать с помощью Vavr.Try
     @Override
-    public Integer call() {
-        throw new UnsupportedOperationException("save: реализовать через try-with-resources");
+    public Integer call() throws IOException {
+        int saved = 0;
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(path))) {
+            saved = writeAll(writer);
+        }
+        System.out.printf("Инструменты сохранены: %d шт%n", saved);
+        return 0;
+    }
+
+    private int writeAll(BufferedWriter writer) throws IOException {
+        int count = 0;
+        for (Instrument instrument : repository) {
+            writer.write(instrument.toString());
+            writer.newLine();
+            count++;
+        }
+        return count;
     }
 }
