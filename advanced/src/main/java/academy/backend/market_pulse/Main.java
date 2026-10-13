@@ -41,6 +41,12 @@ public class Main {
                 .addSubcommand(new WatchCommand(watchlist))
                 .addSubcommand(new QuoteCommand(quoteService))
                 .addSubcommand(new RemoveCommand(repository, watchlist));
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            System.out.println("Завершение работы сервиса котировок");
+            quoteService.close();
+        }));
+
         int exitCode = cli.execute(args);
         System.exit(exitCode);
     }
