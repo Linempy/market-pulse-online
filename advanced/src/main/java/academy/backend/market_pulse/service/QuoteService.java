@@ -2,6 +2,7 @@ package academy.backend.market_pulse.service;
 
 import academy.backend.market_pulse.model.Quote;
 
+import lombok.RequiredArgsConstructor;
 import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.Map;
@@ -14,9 +15,10 @@ import java.util.Queue;
  * чтобы повторный запрос не ходил к источнику снова. Разделение «положить запрос» и «обработать» —
  * заготовка под асинхронную обработку.
  */
-// NOTICE: акцент при показе — разделение request()/processAll(). В однопоточном CLI это выглядит
+// NOTICE: разделение request()/processAll(). В однопоточном CLI это выглядит
 // избыточно, но это именно та точка, в которую позже встанет асинхронная обработка (отдельный
 // поток/пул разбирает очередь, не блокируя вызывающего).
+@RequiredArgsConstructor
 public class QuoteService {
 
     private final QuoteSource source;
@@ -24,10 +26,6 @@ public class QuoteService {
     // O(1) на обоих концах, накладных расходов меньше, чем у LinkedList.
     private final Queue<String> pending = new ArrayDeque<>();
     private final Map<String, Quote> cache = new HashMap<>();
-
-    public QuoteService(QuoteSource source) {
-        this.source = source;
-    }
 
     public void request(String ticker) {
         pending.offer(ticker.toUpperCase());
