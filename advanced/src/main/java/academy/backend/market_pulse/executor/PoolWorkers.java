@@ -10,9 +10,6 @@ import java.util.concurrent.RejectedExecutionException;
 
 /**
  * Пул рабочих потоков, выполняющих задачи из очереди
- *
- * @author Linempy
- * @since 18.11.2026
  */
 public class PoolWorkers {
     private final int numberWorkers;

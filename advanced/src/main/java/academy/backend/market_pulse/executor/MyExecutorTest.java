@@ -5,9 +5,6 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Небольшая демонстрация работы
- *
- * @author Linempy
- * @since 18.11.2026
  */
 public class MyExecutorTest {
     static void main() throws InterruptedException {

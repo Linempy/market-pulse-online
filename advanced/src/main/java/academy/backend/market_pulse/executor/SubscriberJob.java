@@ -7,9 +7,6 @@ import java.time.Duration;
 
 /**
  * Подписка на периодическое выполнение задачи с ограниченным сроком действия.
- *
- * @author Linempy
- * @since 18.11.2026
  */
 @Getter
 public class SubscriberJob {

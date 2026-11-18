@@ -9,9 +9,6 @@ import static academy.backend.market_pulse.executor.JobState.QUEUED;
 
 /**
  * Планирует выполнение подписок и передаёт задачи пулу рабочих потоков
- *
- * @author Linempy
- * @since 18.11.2026
  */
 public class Dispatcher implements AutoCloseable {
     private final PoolWorkers workers;
