@@ -34,7 +34,6 @@ public class Dispatcher implements AutoCloseable {
                 throw new IllegalArgumentException("Подписка уже отменена");
             }
             subscribers.add(subscriberJob);
-            lock.notifyAll();
         }
     }
 
@@ -44,7 +43,6 @@ public class Dispatcher implements AutoCloseable {
                 return false;
             }
             subscriberJob.cancel();
-            lock.notifyAll();
             return true;
         }
     }
@@ -58,7 +56,6 @@ public class Dispatcher implements AutoCloseable {
             }
             subscribers.clear();
             dispatcher.interrupt();
-            lock.notifyAll();
         }
 
         try {
@@ -115,7 +112,6 @@ public class Dispatcher implements AutoCloseable {
         synchronized (lock) {
             if (closed || isCancelledOrExpired(job, System.nanoTime())) {
                 job.setState(WAITING);
-                lock.notifyAll();
                 return;
             }
             job.setState(JobState.RUNNING);
@@ -127,7 +123,6 @@ public class Dispatcher implements AutoCloseable {
             synchronized (lock) {
                 job.setNextRun(System.nanoTime() + job.getInterval().toNanos());
                 job.setState(WAITING);
-                lock.notifyAll();
             }
         }
     }
