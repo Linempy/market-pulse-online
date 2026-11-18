@@ -104,7 +104,7 @@ public class Dispatcher implements AutoCloseable {
     private void submitSubscription(SubscriberJob job) throws InterruptedException {
         job.setState(QUEUED);
         try {
-            workers.submit(() -> executeSubscription(job));
+            workers.execute(() -> executeSubscription(job));
         } catch (InterruptedException | RejectedExecutionException e) {
             job.setState(WAITING);
             throw e;

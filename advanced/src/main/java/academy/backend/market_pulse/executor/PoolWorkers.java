@@ -48,7 +48,7 @@ public class PoolWorkers {
         this.numberWorkers = numberWorkers;
     }
 
-    public synchronized void submit(Runnable job) throws InterruptedException {
+    public synchronized void execute(Runnable job) throws InterruptedException {
         if (!stopped) {
             queueTasks.put(job);
         } else {
