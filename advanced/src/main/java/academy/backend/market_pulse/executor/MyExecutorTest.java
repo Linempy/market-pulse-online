@@ -16,8 +16,18 @@ public class MyExecutorTest {
                 () -> System.out.println("Это я - Job1!")
         );
 
+        SubscriberJob job2 = new SubscriberJob("Job2",
+                Duration.of(2, TimeUnit.SECONDS.toChronoUnit()),
+                Duration.of(15, TimeUnit.SECONDS.toChronoUnit()),
+                () -> System.out.println("А это я - Job2!")
+        );
+
         dispatcher.add(job1);
-        Thread.sleep(10000);
+        Thread.sleep(5000);
+        dispatcher.add(job2);
+        Thread.sleep(5000);
         dispatcher.cancel(job1);
+        Thread.sleep(5000);
+        dispatcher.close();
     }
 }
